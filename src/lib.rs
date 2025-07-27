@@ -85,11 +85,8 @@ impl Regex {
 
     /// Find first match with execution limits
     pub fn find_with_limits(&self, text: &str, limits: ExecLimits) -> Option<(usize, usize)> {
-        if let Some(captures) = self.captures_with_limits(text, limits) {
-            captures.get(0)
-        } else {
-            None
-        }
+        self.captures_with_limits(text, limits)
+            .and_then(|captures| captures.get(0))
     }
 
     /// Get all capture groups from the first match
@@ -102,14 +99,11 @@ impl Regex {
         // Text is already validated as UTF-8 by Rust's &str type
         matcher::search(self, text, 0, text.chars().count() as i32, limits)
             .ok()
+            .filter(|&pos| pos >= 0)
             .and_then(|pos| {
-                if pos >= 0 {
-                    matcher::match_at(self, text, pos as usize, limits)
-                        .ok()
-                        .flatten()
-                } else {
-                    None
-                }
+                matcher::match_at(self, text, pos as usize, limits)
+                    .ok()
+                    .flatten()
             })
     }
 }
@@ -117,15 +111,9 @@ impl Regex {
 impl Captures {
     /// Get the bounds of a capture group
     pub fn get(&self, index: usize) -> Option<(usize, usize)> {
-        if index < RE_NREGS {
-            if let (Some(start), Some(end)) = self.groups[index] {
-                Some((start, end))
-            } else {
-                None
-            }
-        } else {
-            None
-        }
+        (index < RE_NREGS)
+            .then(|| self.groups[index])
+            .and_then(|(start, end)| start.zip(end))
     }
 
     /// Get number of capture groups (including group 0)

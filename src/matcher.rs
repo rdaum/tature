@@ -95,11 +95,11 @@ impl<'a> MatchState<'a> {
         let ch = self.text_chars[self.text_pos];
 
         // Apply translation if available
-        if let Some(ref translate) = self.regex.translate {
-            Ok(translate.get(&ch).copied().unwrap_or(ch))
-        } else {
-            Ok(ch)
-        }
+        let Some(ref translate) = self.regex.translate else {
+            return Ok(ch);
+        };
+        
+        Ok(translate.get(&ch).copied().unwrap_or(ch))
     }
 
     /// Advance text position
@@ -592,10 +592,10 @@ impl<'a> MatchState<'a> {
     /// Backtrack on failure
     fn backtrack(&mut self) -> Result<()> {
         if !self.pop_failure() {
-            Err(RegexError::ExecutionError)
-        } else {
-            Ok(())
+            return Err(RegexError::ExecutionError);
         }
+        
+        Ok(())
     }
 
     /// Build captures result
@@ -640,29 +640,34 @@ pub fn search(
 
     if range >= 0 {
         // Forward search
-        for pos in start..=end {
-            if pos > text_len {
-                break;
-            }
-            let mut state = MatchState::new(regex, text, limits);
-            if let Ok(Some(_)) = state.execute(pos) {
-                return Ok(pos as i32);
-            }
-        }
+        (start..=end)
+            .take_while(|&pos| pos <= text_len)
+            .find_map(|pos| {
+                let mut state = MatchState::new(regex, text, limits);
+                state
+                    .execute(pos)
+                    .ok()
+                    .and_then(|result| result)
+                    .map(|_| pos as i32)
+            })
+            .map(Ok)
+            .unwrap_or(Ok(-1))
     } else {
         // Backward search
-        for pos in (end..=start).rev() {
-            if pos > text_len {
-                continue;
-            }
-            let mut state = MatchState::new(regex, text, limits);
-            if let Ok(Some(_)) = state.execute(pos) {
-                return Ok(pos as i32);
-            }
-        }
+        (end..=start)
+            .rev()
+            .filter(|&pos| pos <= text_len)
+            .find_map(|pos| {
+                let mut state = MatchState::new(regex, text, limits);
+                state
+                    .execute(pos)
+                    .ok()
+                    .and_then(|result| result)
+                    .map(|_| pos as i32)
+            })
+            .map(Ok)
+            .unwrap_or(Ok(-1))
     }
-
-    Ok(-1)
 }
 
 /// Match pattern at specific position
@@ -674,9 +679,7 @@ pub fn match_at(
 ) -> Result<Option<Captures>> {
     let mut state = MatchState::new(regex, text, limits);
 
-    if let Ok(Some(end_pos)) = state.execute(pos) {
-        Ok(Some(state.build_captures(pos, end_pos)))
-    } else {
-        Ok(None)
-    }
+    Ok(state
+        .execute(pos)?
+        .map(|end_pos| state.build_captures(pos, end_pos)))
 }

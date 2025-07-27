@@ -178,12 +178,12 @@ impl Compiler {
     /// Get next character from pattern
     fn next_char(&mut self) -> Result<char> {
         if self.pos >= self.pattern.len() {
-            Err(RegexError::PrematureEnd)
-        } else {
-            let ch = self.pattern[self.pos];
-            self.pos += 1;
-            Ok(ch)
+            return Err(RegexError::PrematureEnd);
         }
+        
+        let ch = self.pattern[self.pos];
+        self.pos += 1;
+        Ok(ch)
     }
 
     /// Store a byte in the output buffer
@@ -232,12 +232,12 @@ impl Compiler {
 
     /// Push new level starts
     fn push_level_starts(&mut self) -> Result<()> {
-        if self.starts_base < (MAX_NESTING - 1) * NUM_LEVELS {
-            self.starts_base += NUM_LEVELS;
-            Ok(())
-        } else {
-            Err(RegexError::TooComplex)
+        if self.starts_base >= (MAX_NESTING - 1) * NUM_LEVELS {
+            return Err(RegexError::TooComplex);
         }
+        
+        self.starts_base += NUM_LEVELS;
+        Ok(())
     }
 
     /// Pop level starts
@@ -280,11 +280,11 @@ impl Compiler {
 
         let byte_val = val1 * 16 + val2;
         // Convert byte value to char (only works for ASCII range)
-        if byte_val <= 127 {
-            Ok(byte_val as char)
-        } else {
-            Err(RegexError::BadHexEscape)
+        if byte_val > 127 {
+            return Err(RegexError::BadHexEscape);
         }
+        
+        Ok(byte_val as char)
     }
 
     /// Translate ANSI escape sequences
@@ -300,11 +300,11 @@ impl Compiler {
             'x' | 'X' => return self.get_hex(),
             _ => {
                 // Apply translation table if available
-                if let Some(ref translate) = self.translate {
-                    translate.get(&ch).copied().unwrap_or(ch)
-                } else {
-                    ch
-                }
+                let Some(ref translate) = self.translate else {
+                    return Ok(ch);
+                };
+                
+                translate.get(&ch).copied().unwrap_or(ch)
             }
         };
         Ok(result)
@@ -433,11 +433,11 @@ impl Compiler {
                 if self.beginning_context {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
-                    } else {
-                        self.set_level_start();
-                        self.store_opcode_and_char(CompiledOp::Exact, '?');
-                        return Ok(());
                     }
+                    
+                    self.set_level_start();
+                    self.store_opcode_and_char(CompiledOp::Exact, '?');
+                    return Ok(());
                 }
 
                 if self.current_level_start() == self.buffer.len() {
@@ -455,11 +455,11 @@ impl Compiler {
                 if self.beginning_context {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
-                    } else {
-                        self.set_level_start();
-                        self.store_opcode_and_char(CompiledOp::Exact, '*');
-                        return Ok(());
                     }
+                    
+                    self.set_level_start();
+                    self.store_opcode_and_char(CompiledOp::Exact, '*');
+                    return Ok(());
                 }
 
                 if self.current_level_start() == self.buffer.len() {
@@ -482,11 +482,11 @@ impl Compiler {
                 if self.beginning_context {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
-                    } else {
-                        self.set_level_start();
-                        self.store_opcode_and_char(CompiledOp::Exact, '+');
-                        return Ok(());
                     }
+                    
+                    self.set_level_start();
+                    self.store_opcode_and_char(CompiledOp::Exact, '+');
+                    return Ok(());
                 }
 
                 if self.current_level_start() == self.buffer.len() {
