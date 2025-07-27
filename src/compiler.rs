@@ -51,12 +51,24 @@ impl Compiler {
     fn new(pattern: &str, syntax: SyntaxFlags) -> Result<Self> {
         let pattern_chars: Vec<char> = pattern.chars().collect();
 
+        // Set up case insensitive translation table if needed
+        let translate = if syntax.case_insensitive() {
+            let mut table = std::collections::HashMap::new();
+            // Map uppercase letters to lowercase for case insensitive matching
+            for c in 'A'..='Z' {
+                table.insert(c, c.to_ascii_lowercase());
+            }
+            Some(table)
+        } else {
+            None
+        };
+
         let mut compiler = Compiler {
             pattern: pattern_chars,
             pos: 0,
             buffer: Vec::new(),
             syntax,
-            translate: None,
+            translate,
             plain_ops: std::collections::HashMap::new(),
             quoted_ops: std::collections::HashMap::new(),
             precedences: [0; 256],

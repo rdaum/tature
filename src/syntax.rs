@@ -23,6 +23,8 @@ bitflags! {
         const ANSI_HEX = 64;
         /// Disable GNU extensions
         const NO_GNU_EXTENSIONS = 128;
+        /// Case insensitive matching
+        const CASE_INSENSITIVE = 256;
     }
 }
 
@@ -48,6 +50,9 @@ impl SyntaxFlags {
 
     /// EMACS-style regex syntax (default)
     pub const EMACS: Self = Self::empty();
+
+    /// LambdaMOO-style regex syntax (context independent operations)
+    pub const MOO: Self = Self::CONTEXT_INDEP_OPS;
 
     /// Check if parentheses need backslash quoting
     pub fn needs_backslash_parens(self) -> bool {
@@ -87,5 +92,10 @@ impl SyntaxFlags {
     /// Check if GNU extensions are disabled
     pub fn no_gnu_extensions(self) -> bool {
         self.contains(Self::NO_GNU_EXTENSIONS)
+    }
+
+    /// Check if case insensitive matching is enabled
+    pub fn case_insensitive(self) -> bool {
+        self.contains(Self::CASE_INSENSITIVE)
     }
 }
