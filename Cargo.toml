@@ -1,0 +1,12 @@
+[package]
+name = "regexpr"
+version = "0.1.0"
+edition = "2021"
+authors = ["LambdaMOO Port"]
+description = "Port of classic regexpr.c regex engine to Rust with tick-based execution limits"
+license = "MIT"
+
+[dependencies]
+bitflags = "2.9"
+
+[dev-dependencies]
