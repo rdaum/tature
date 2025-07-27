@@ -1,8 +1,8 @@
 [package]
-name = "regexpr"
+name = "tature"
 version = "0.1.0"
 edition = "2021"
-authors = ["LambdaMOO Port"]
+authors = ["Ryan Daum"]
 description = "Port of classic regexpr.c regex engine to Rust with tick-based execution limits"
 license = "MIT"
 

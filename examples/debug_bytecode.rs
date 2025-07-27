@@ -1,4 +1,4 @@
-use regexpr::{Regex, SyntaxFlags};
+use tature::{Regex, SyntaxFlags};
 
 fn main() {
     let patterns = vec![

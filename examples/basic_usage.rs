@@ -1,6 +1,6 @@
 //! Basic usage examples for the regexpr crate
 
-use regexpr::{ExecLimits, Regex, SyntaxFlags};
+use tature::{ExecLimits, Regex, SyntaxFlags};
 
 fn main() {
     println!("=== Basic Pattern Matching ===");

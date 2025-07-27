@@ -2,7 +2,7 @@
 //!
 //! These tests verify compatibility with the original regexpr.c behavior
 
-use regexpr::{ExecLimits, Regex, SyntaxFlags};
+use tature::{ExecLimits, Regex, SyntaxFlags};
 
 #[test]
 fn test_basic_exact_match() {

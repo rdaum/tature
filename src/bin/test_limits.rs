@@ -1,4 +1,4 @@
-use regexpr::{ExecLimits, Regex};
+use tature::{ExecLimits, Regex};
 
 fn main() {
     println!("Testing execution limits:");

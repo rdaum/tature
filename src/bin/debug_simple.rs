@@ -1,4 +1,4 @@
-use regexpr::Regex;
+use tature::Regex;
 
 fn main() {
     println!("Testing .* pattern:");

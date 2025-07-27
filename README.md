@@ -26,7 +26,7 @@ it has broken behaviours.
 ## Quick Start
 
 ```rust
-use regexpr::{Regex, SyntaxFlags, ExecLimits};
+use tature::{Regex, SyntaxFlags, ExecLimits};
 
 // Basic matching
 let regex = Regex::new("hello.*world").unwrap();
@@ -105,7 +105,7 @@ let regex = Regex::with_syntax("ab\\+c", SyntaxFlags::GREP).unwrap();
 Prevent regex-based DoS attacks with configurable limits:
 
 ```rust
-use regexpr::ExecLimits;
+use tature::ExecLimits;
 
 let limits = ExecLimits {
 max_ticks: Some(50000),     // Maximum execution steps

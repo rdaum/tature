@@ -1,4 +1,4 @@
-use regexpr::Regex;
+use tature::Regex;
 
 fn main() {
     let patterns = ["a*", "ab*c", ".*"];
