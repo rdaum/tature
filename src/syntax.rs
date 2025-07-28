@@ -1,30 +1,48 @@
 //! Regex syntax configuration flags
 
-use bitflags::bitflags;
+/// Syntax flags that control regex compilation behavior
+/// These correspond to the RE_* flags in regexpr.h:42-49
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SyntaxFlags(u32);
 
-bitflags! {
-    /// Syntax flags that control regex compilation behavior
-    /// These correspond to the RE_* flags in regexpr.h:42-49
-    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct SyntaxFlags: u32 {
-        /// No quoting needed for parentheses - ( and ) are special
-        const NO_BK_PARENS = 1;
-        /// No quoting needed for vertical bar - | is special
-        const NO_BK_VBAR = 2;
-        /// Quoting needed for + and ? - \+ and \? are special
-        const BK_PLUS_QM = 4;
-        /// | binds tighter than ^ and $
-        const TIGHT_VBAR = 8;
-        /// Treat newline as alternation operator
-        const NEWLINE_OR = 16;
-        /// ^$?*+ are special in all contexts
-        const CONTEXT_INDEP_OPS = 32;
-        /// Enable ANSI sequences (\n, \t, etc) and \xhh
-        const ANSI_HEX = 64;
-        /// Disable GNU extensions
-        const NO_GNU_EXTENSIONS = 128;
-        /// Case insensitive matching
-        const CASE_INSENSITIVE = 256;
+impl SyntaxFlags {
+    /// No quoting needed for parentheses - ( and ) are special
+    pub const NO_BK_PARENS: Self = Self(1);
+    /// No quoting needed for vertical bar - | is special
+    pub const NO_BK_VBAR: Self = Self(2);
+    /// Quoting needed for + and ? - \+ and \? are special
+    pub const BK_PLUS_QM: Self = Self(4);
+    /// | binds tighter than ^ and $
+    pub const TIGHT_VBAR: Self = Self(8);
+    /// Treat newline as alternation operator
+    pub const NEWLINE_OR: Self = Self(16);
+    /// ^$?*+ are special in all contexts
+    pub const CONTEXT_INDEP_OPS: Self = Self(32);
+    /// Enable ANSI sequences (\n, \t, etc) and \xhh
+    pub const ANSI_HEX: Self = Self(64);
+    /// Disable GNU extensions
+    pub const NO_GNU_EXTENSIONS: Self = Self(128);
+    /// Case insensitive matching
+    pub const CASE_INSENSITIVE: Self = Self(256);
+
+    /// Create empty flags (no bits set)
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    /// Check if this flag set contains the given flag
+    pub const fn contains(self, flag: Self) -> bool {
+        self.0 & flag.0 != 0
+    }
+
+    /// Get the raw bits value
+    pub const fn bits(self) -> u32 {
+        self.0
+    }
+
+    /// Create from raw bits, truncating invalid bits
+    pub const fn from_bits_truncate(bits: u32) -> Self {
+        Self(bits)
     }
 }
 

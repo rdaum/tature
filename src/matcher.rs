@@ -98,7 +98,7 @@ impl<'a> MatchState<'a> {
         let Some(ref translate) = self.regex.translate else {
             return Ok(ch);
         };
-        
+
         Ok(translate.get(&ch).copied().unwrap_or(ch))
     }
 
@@ -594,7 +594,7 @@ impl<'a> MatchState<'a> {
         if !self.pop_failure() {
             return Err(RegexError::ExecutionError);
         }
-        
+
         Ok(())
     }
 

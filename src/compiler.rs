@@ -180,7 +180,7 @@ impl Compiler {
         if self.pos >= self.pattern.len() {
             return Err(RegexError::PrematureEnd);
         }
-        
+
         let ch = self.pattern[self.pos];
         self.pos += 1;
         Ok(ch)
@@ -235,7 +235,7 @@ impl Compiler {
         if self.starts_base >= (MAX_NESTING - 1) * NUM_LEVELS {
             return Err(RegexError::TooComplex);
         }
-        
+
         self.starts_base += NUM_LEVELS;
         Ok(())
     }
@@ -283,7 +283,7 @@ impl Compiler {
         if byte_val > 127 {
             return Err(RegexError::BadHexEscape);
         }
-        
+
         Ok(byte_val as char)
     }
 
@@ -303,7 +303,7 @@ impl Compiler {
                 let Some(ref translate) = self.translate else {
                     return Ok(ch);
                 };
-                
+
                 translate.get(&ch).copied().unwrap_or(ch)
             }
         };
@@ -434,7 +434,7 @@ impl Compiler {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
                     }
-                    
+
                     self.set_level_start();
                     self.store_opcode_and_char(CompiledOp::Exact, '?');
                     return Ok(());
@@ -456,7 +456,7 @@ impl Compiler {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
                     }
-                    
+
                     self.set_level_start();
                     self.store_opcode_and_char(CompiledOp::Exact, '*');
                     return Ok(());
@@ -483,7 +483,7 @@ impl Compiler {
                     if self.syntax.context_indep_ops() {
                         return Err(RegexError::BadSpecialChar);
                     }
-                    
+
                     self.set_level_start();
                     self.store_opcode_and_char(CompiledOp::Exact, '+');
                     return Ok(());
